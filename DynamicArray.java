@@ -14,7 +14,7 @@ class DynamicArray<E> {
     }
 
     public E get(int index) throws ArrayIndexOutOfBoundsException {
-        if (index >= size) {
+        if (index >= size || index < 0) {
             throw new ArrayIndexOutOfBoundsException("Index " + index + " is out of bounds");
         }
         @SuppressWarnings("unchecked")
@@ -51,12 +51,9 @@ class DynamicArray<E> {
 
     public void prepend(E elem) {
         Object[] temp;
-        if (size + 1 >= capacity) {
-            temp = new Object[capacity * 2];
+        if (size + 1 >= capacity)
             capacity *= 2;
-        } else {
-            temp = new Object[capacity];
-        }
+        temp = new Object[capacity];
         temp[0] = elem;
         for (int i = 0; i < size; i++) {
             temp[i + 1] = elems[i];
@@ -65,6 +62,59 @@ class DynamicArray<E> {
         size++;
     }
 
+    public void insert(E elem, int index) throws ArrayIndexOutOfBoundsException {
+        if (index >= size || index < 0) {
+            throw new ArrayIndexOutOfBoundsException("Index " + index + " is out of bounds");
+        }
+        Object[] temp;
+        if (size + 1 >= capacity)
+            capacity *= 2;
+        temp = new Object[capacity];
+
+        for (int i = 0; i < index; i++) {
+            temp[i] = elems[i];
+        }
+        temp[index] = elem;
+        for (int i = index; i < size; i++) {
+            temp[i + 1] = elems[i];
+        }
+        elems = temp;
+        size++;
+    }
+
+    public E pop() {
+        @SuppressWarnings("unchecked")
+        E pop = (E) elems[size - 1];
+        size--;
+        return pop;
+    }
+
+    public void delete(int index) throws ArrayIndexOutOfBoundsException {
+        if (index >= capacity || index < 0) {
+            throw new ArrayIndexOutOfBoundsException("Index " + index + " is out of bounds");
+        }
+        Object[] temp = new Object[capacity];
+        for (int i = 0; i < index; i++) {
+            temp[i] = elems[i];
+        }
+        for (int i = index + 1; i < size; i++) {
+            temp[i - 1] = elems[i];
+        }
+
+        elems = temp;
+    }
+
+    public int find(E elem) {
+        int index = -1;
+        for (int i = 0; i < size; i++) {
+            if (elems[i] == elem)
+                return i;
+        }
+        return index;
+    }
+}
+
+class Main {
     public static void main(String[] args) {
         DynamicArray<Integer> arr = new DynamicArray<Integer>();
         for (int i = 0; i < 10; i++) {
@@ -77,8 +127,11 @@ class DynamicArray<E> {
         System.out.printf("Size is %d\n", arr.getSize());
 
         arr.prepend(2);
+        int z = arr.pop();
+        System.out.println(z);
         for (int i = 0; i < arr.getSize(); i++) {
             System.out.println(arr.get(i));
         }
+        System.out.printf("Size is %d\n", arr.getSize());
     }
 }
