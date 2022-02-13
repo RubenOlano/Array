@@ -13,7 +13,10 @@ class DynamicArray<E> {
         this(4);
     }
 
-    public E get(int index) {
+    public E get(int index) throws ArrayIndexOutOfBoundsException {
+        if (index >= size) {
+            throw new ArrayIndexOutOfBoundsException("Index " + index + " is out of bounds");
+        }
         @SuppressWarnings("unchecked")
         E elem = (E) elems[index];
         return elem;
@@ -46,6 +49,22 @@ class DynamicArray<E> {
         this.set(size, elem);
     }
 
+    public void prepend(E elem) {
+        Object[] temp;
+        if (size + 1 >= capacity) {
+            temp = new Object[capacity * 2];
+            capacity *= 2;
+        } else {
+            temp = new Object[capacity];
+        }
+        temp[0] = elem;
+        for (int i = 0; i < size; i++) {
+            temp[i + 1] = elems[i];
+        }
+        elems = temp;
+        size++;
+    }
+
     public static void main(String[] args) {
         DynamicArray<Integer> arr = new DynamicArray<Integer>();
         for (int i = 0; i < 10; i++) {
@@ -56,5 +75,10 @@ class DynamicArray<E> {
             System.out.println(arr.get(i));
         }
         System.out.printf("Size is %d\n", arr.getSize());
+
+        arr.prepend(2);
+        for (int i = 0; i < arr.getSize(); i++) {
+            System.out.println(arr.get(i));
+        }
     }
 }
