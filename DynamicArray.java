@@ -1,11 +1,16 @@
-class DynamicArray<E> {
-    private Object[] elems;
+import java.util.Iterator;
+
+@SuppressWarnings("unchecked")
+class DynamicArray<T> implements Iterable<T> {
+    private T[] elems;
     private int capacity;
     private int size;
 
     public DynamicArray(int capacity) {
+        if (capacity < 0)
+            throw new IllegalArgumentException("Capacity must be positive");
         this.capacity = capacity;
-        elems = new Object[capacity];
+        elems = (T[]) new Object[capacity];
         size = 0;
     };
 
@@ -13,13 +18,11 @@ class DynamicArray<E> {
         this(4);
     }
 
-    public E get(int index) throws ArrayIndexOutOfBoundsException {
+    public T get(int index) throws ArrayIndexOutOfBoundsException {
         if (index >= size || index < 0) {
             throw new ArrayIndexOutOfBoundsException("Index " + index + " is out of bounds");
         }
-        @SuppressWarnings("unchecked")
-        E elem = (E) elems[index];
-        return elem;
+        return elems[index];
     }
 
     public int getSize() {
@@ -30,9 +33,9 @@ class DynamicArray<E> {
         return size == 0;
     }
 
-    public void set(int index, E elem) {
+    public void set(int index, T elem) {
         if (index >= capacity) {
-            Object[] temp = new Object[capacity * 2];
+            T[] temp = (T[]) new Object[capacity * 2];
             for (int i = 0; i < capacity; i++) {
                 temp[i] = elems[i];
                 System.out.printf("Add %d\n", i);
@@ -45,15 +48,15 @@ class DynamicArray<E> {
         size++;
     }
 
-    public void push(E elem) {
+    public void push(T elem) {
         this.set(size, elem);
     }
 
-    public void prepend(E elem) {
-        Object[] temp;
+    public void prepend(T elem) {
+        T[] temp;
         if (size + 1 >= capacity)
             capacity *= 2;
-        temp = new Object[capacity];
+        temp = (T[]) new Object[capacity];
         temp[0] = elem;
         for (int i = 0; i < size; i++) {
             temp[i + 1] = elems[i];
@@ -62,14 +65,14 @@ class DynamicArray<E> {
         size++;
     }
 
-    public void insert(E elem, int index) throws ArrayIndexOutOfBoundsException {
+    public void insert(T elem, int index) throws ArrayIndexOutOfBoundsException {
         if (index >= size || index < 0) {
             throw new ArrayIndexOutOfBoundsException("Index " + index + " is out of bounds");
         }
-        Object[] temp;
+        T[] temp;
         if (size + 1 >= capacity)
             capacity *= 2;
-        temp = new Object[capacity];
+        temp = (T[]) new Object[capacity];
 
         for (int i = 0; i < index; i++) {
             temp[i] = elems[i];
@@ -82,9 +85,8 @@ class DynamicArray<E> {
         size++;
     }
 
-    public E pop() {
-        @SuppressWarnings("unchecked")
-        E pop = (E) elems[size - 1];
+    public T pop() {
+        T pop = elems[size - 1];
         size--;
         return pop;
     }
@@ -93,7 +95,7 @@ class DynamicArray<E> {
         if (index >= capacity || index < 0) {
             throw new ArrayIndexOutOfBoundsException("Index " + index + " is out of bounds");
         }
-        Object[] temp = new Object[capacity];
+        T[] temp = (T[]) new Object[capacity];
         for (int i = 0; i < index; i++) {
             temp[i] = elems[i];
         }
@@ -104,13 +106,46 @@ class DynamicArray<E> {
         elems = temp;
     }
 
-    public int find(E elem) {
+    public int find(T elem) {
         int index = -1;
         for (int i = 0; i < size; i++) {
             if (elems[i] == elem)
                 return i;
         }
         return index;
+    }
+
+    public void clear() {
+        elems = (T[]) new Object[capacity];
+        size = 0;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            int index = 0;
+
+            public boolean hasNext() {
+                return index < size;
+            }
+
+            public T next() {
+                return elems[index++];
+            }
+        };
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < size; i++) {
+            sb.append(elems[i]);
+            if (i != size - 1)
+                sb.append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }
 
@@ -125,6 +160,7 @@ class Main {
             System.out.println(arr.get(i));
         }
         System.out.printf("Size is %d\n", arr.getSize());
+        System.out.println(arr);
 
         arr.prepend(2);
         int z = arr.pop();
@@ -133,5 +169,7 @@ class Main {
             System.out.println(arr.get(i));
         }
         System.out.printf("Size is %d\n", arr.getSize());
+        System.out.println(arr);
     }
+
 }
